@@ -10,8 +10,10 @@ The OCR results are outputted to a textfile named **output.txt**.
 
 ## Getting Started
 
-1. Download the file [eng.traineddata](https://github.com/tesseract-ocr/tessdata) and place it in this folder.
+1. Download the file [sciter.dll](https://github.com/c-smile/sciter-sdk/tree/master/bin.win/x64) and place it in this folder.
 
-2. Ensure the Rust toolchain is installed.
+2. Download the file [eng.traineddata](https://github.com/tesseract-ocr/tessdata) and place it in this folder.
 
-3. Run `cargo run`.
+3. Ensure the Rust toolchain is installed.
+
+4. Run `cargo run`.
