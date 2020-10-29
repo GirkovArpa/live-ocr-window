@@ -1,0 +1,85 @@
+const stream = Stream.openFile("output.txt", "a");
+
+view.root << event closerequest (evt) {
+  stream.close();
+  view.close();
+}
+
+view << event statechange { 
+  view.windowTopmost = true;
+};
+
+function self.ready() {
+  const w = self.intrinsicWidthMax();
+  const h = self.intrinsicHeight(w);
+  const (sw, sh) = view.screenBox(#frame, #dimension);
+  view.move((sw / 2) - (w / 2), (sh / 2) - (h / 2), w, h, true);
+  view.windowResizable = false;
+}
+
+let global_img;
+let global_last_result = "";
+let img_count = 0;
+
+event click $(button#save-png) {
+  var bytes = img.toBytes();
+  var filter = "PNG Files (*.png)|*.png|All Files (*.*)|*.*";
+  var ext = "png";
+  var path = view.selectFile(#save, filter, ext);
+  if (path) bytes.save(path);
+}
+
+function saveImage(bytes, filename) {
+  var path = "./" + filename;
+  bytes.save(path);
+}
+
+function clipImage( img,x,y,w,h ){
+  var iw = img.width;
+  var ih = img.height;
+  var nw = w > iw ? iw : w ;
+  var nh = h > ih ? ih : h ;
+  
+  var startX = (x + nw) > iw ? (iw - nw) : x ;
+  startX = startX < 0 ? 0 : startX ;
+  var startY = (y + nh) > ih ? (ih - nh) : y ;
+  startY = startY < 0 ? 0 : startY ;
+
+  return new Image(nw,nh,function(gfx){
+    gfx.drawImage(img, 0, 0, nw, nh, startX, startY, nw, nh);
+  });
+}
+
+view.root.timer(500ms, function() {
+  var img = View.screenBox(0, #snapshot);
+  var (x, y, w, h) = view.box(#rectw, #client, #screen);
+  img = clipImage(img, x, y + 32, 600, 435);
+  const bytes = img.toBytes();
+  let duplicate = true;
+  if (global_img != undefined) {
+    const old_bytes = global_img.toBytes();
+    if (bytes.length == old_bytes.length) {
+      for (var i = 0; i < bytes.length; i++) {
+        if (bytes[i] != old_bytes[i]) {
+          duplicate = false;
+          break;
+        }
+      }
+    } else {
+      duplicate = false;
+    }
+  }
+  if (duplicate == false) {
+    const screenshot_filename = "screenshot" + (img_count % 2) + ".png";
+    saveImage(bytes, screenshot_filename);
+    const result = view.ocr("./" + screenshot_filename);
+    stdout.println(result);
+    if (result != global_last_result && result.trim() != "") {
+      stream.print(result.replace(/\n\n/g, "\n") + "\n");
+    }
+    global_last_result = result;
+    img_count++;
+  }
+  global_img = img;
+  return true; // keep timer ticking
+});

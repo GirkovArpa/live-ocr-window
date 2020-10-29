@@ -1,0 +1,38 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  width: max-content;
+  height: max-content;
+  background: transparent;
+  overflow: none;
+}
+
+body {
+  width: 600px;
+  height: calc(435px + 32px); 
+  overflow: none;
+  overflow: hidden;
+  outline: rgba(251, 255, 0, 0.5) 1dip solid -2dip;
+}
+
+button {
+  width: 32px;
+}
+
+img {
+  box-sizing: border-box;
+  outline: rgba(255, 0, 0, 0.5) 1dip solid -1dip;
+  opacity: 1.0;
+  width: 600px;
+  height: 435px;
+}
+
+header {
+  width: 100%;
+  height: 32px;
+  background-color: blue;
+  text-align: right;
+}
